@@ -35,18 +35,6 @@
     enabled: yes
     state: started
     masked: no
-
-#- stat: 
-    #path: /etc/resolv.conf
-  #register: links
-
-  
-  
-#- debug:
-    #var: links
-#- debug:
-    #var: links.stat.lnk_target
-  
   
 - name: Create a symbolic link /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
   ansible.builtin.file:
@@ -57,43 +45,3 @@
     group: root
     state: link
     mode: '1777'
-  when: links.stat.lnk_target == "/run/systemd/resolve/stub-resolv.conf"
-
-#/etc/systemd/resolved.conf
-#/etc/systemd/resolved.conf.d/
-
-
-
-#systemd-resolved.service
-
-#ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
-
-
-#/etc/systemd/resolved.conf.d/dns_servers.conf
-
-#[Resolve]
-#DNS=192.168.35.1 fd7b:d0bd:7a6e::1
-#Domains=~.
-
-
-#/etc/systemd/resolved.conf.d/fallback_dns.conf
-#[Resolve]
-#FallbackDNS=127.0.0.1 ::1
-
-
-
-#DNSSEC
-
-
-#/etc/systemd/resolved.conf.d/dnssec.conf
-
-#[Resolve]
-#DNSSEC=true
-
-
-
-#/etc/systemd/resolved.conf.d/dns_over_tls.conf
-
-#[Resolve]
-#DNS=9.9.9.9#dns.quad9.net
-#DNSOverTLS=yes
