@@ -1,0 +1,6 @@
+---
+- name: systemd-resolved restart
+  ansible.builtin.systemd:
+    name: systemd-resolved
+    state: restarted
+    masked: no

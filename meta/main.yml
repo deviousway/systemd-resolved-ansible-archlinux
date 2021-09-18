@@ -1,0 +1,21 @@
+galaxy_info:
+  author: deviousway
+  description: systemd-resolved Install and setup on archlinux
+  company: deviousway IT
+
+  license: license (MIT)
+  min_ansible_version: 2.1
+
+
+
+platforms:
+  - name: Archlinux
+      versions:
+       - all
+
+
+  galaxy_tags: [ "archlinux", "systemd-resolved", "systemd" ]
+
+
+dependencies: []
+

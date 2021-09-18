@@ -1,0 +1,99 @@
+---
+#https://wiki.archlinux.org/title/Systemd-resolved
+- name: Populate service facts
+  ansible.builtin.service_facts:
+
+- name: Enable service systemd-resolved and ensure it started is not masked
+  ansible.builtin.systemd:
+    name: avahi-daemon
+    enabled: no
+    state: stopped
+    masked: yes
+  when: "'avahi-daemon' in services"
+  
+- name: Remove package openresolv as it conflicts with systemd-resolvconf
+  community.general.pacman:
+    name: openresolv
+    state: absent
+    
+- name: Install package systemd-resolvconf from repo
+  community.general.pacman:
+    name: systemd-resolvconf
+    state: present
+
+- name: Copy resolved.conf.j2 /etc/systemd/resolved.conf
+  template:
+    src: resolved.conf.j2
+    dest: /etc/systemd/resolved.conf
+  become: yes        
+  notify:
+    - systemd-resolved restart
+    
+- name: Enable service systemd-resolved and ensure it started is not masked
+  ansible.builtin.systemd:
+    name: systemd-resolved
+    enabled: yes
+    state: started
+    masked: no
+
+#- stat: 
+    #path: /etc/resolv.conf
+  #register: links
+
+  
+  
+#- debug:
+    #var: links
+#- debug:
+    #var: links.stat.lnk_target
+  
+  
+- name: Create a symbolic link /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+  ansible.builtin.file:
+    src: /run/systemd/resolve/stub-resolv.conf
+    dest: /etc/resolv.conf
+    force: yes
+    owner: root
+    group: root
+    state: link
+    mode: '1777'
+  when: links.stat.lnk_target == "/run/systemd/resolve/stub-resolv.conf"
+
+#/etc/systemd/resolved.conf
+#/etc/systemd/resolved.conf.d/
+
+
+
+#systemd-resolved.service
+
+#ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+
+
+#/etc/systemd/resolved.conf.d/dns_servers.conf
+
+#[Resolve]
+#DNS=192.168.35.1 fd7b:d0bd:7a6e::1
+#Domains=~.
+
+
+#/etc/systemd/resolved.conf.d/fallback_dns.conf
+#[Resolve]
+#FallbackDNS=127.0.0.1 ::1
+
+
+
+#DNSSEC
+
+
+#/etc/systemd/resolved.conf.d/dnssec.conf
+
+#[Resolve]
+#DNSSEC=true
+
+
+
+#/etc/systemd/resolved.conf.d/dns_over_tls.conf
+
+#[Resolve]
+#DNS=9.9.9.9#dns.quad9.net
+#DNSOverTLS=yes
